@@ -9,7 +9,7 @@ from icalendar import Calendar, Event
 import requests
 
 
-class Convert():
+class Convert:
     def __init__(self, filename):
         self.filename = filename
 
@@ -22,21 +22,27 @@ class Convert():
             tree = ElementTree.fromstring(self.filename)
             root = tree
 
-        for subject in root.iter('subject'):
+        for subject in root.iter("subject"):
             name = subject.find("name").get("value")
             single_subject = {
                 "name": name,
                 "professor": subject.find("professor").get("value"),
             }
 
-            single_subject["info"] = list(map(
-                lambda x: {
-                    "day": x.get("day"),
-                    "place": x.get("place"),
-                    "startAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("starttime")) * 5, 60)),
-                    "endAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("endtime")) * 5, 60))
-                }, subject.find("time").findall("data")
-            )
+            single_subject["info"] = list(
+                map(
+                    lambda x: {
+                        "day": x.get("day"),
+                        "place": x.get("place"),
+                        "startAt": "{:02d}:{:02d}".format(
+                            *divmod(int(x.get("starttime")) * 5, 60)
+                        ),
+                        "endAt": "{:02d}:{:02d}".format(
+                            *divmod(int(x.get("endtime")) * 5, 60)
+                        ),
+                    },
+                    subject.find("time").findall("data"),
+                )
             )
             result.append(single_subject)
 
@@ -48,16 +54,31 @@ class Convert():
         for item in timetable:
             for time in item["info"]:
                 event = Event()
-                event.add('summary', item["name"])
-                event.add('dtstart', parser.parse("%s %s" % (
-                    self.get_nearest_date(start_date, time["day"]), time["startAt"])))
-                event.add('dtend', parser.parse("%s %s" % (
-                    self.get_nearest_date(start_date, time["day"]), time["endAt"])))
-                event.add('rrule', {'freq': 'WEEKLY',
-                                    'until': parser.parse(end_date)})
+                event.add("summary", item["name"])
+                event.add(
+                    "dtstart",
+                    parser.parse(
+                        "%s %s"
+                        % (
+                            self.get_nearest_date(start_date, time["day"]),
+                            time["startAt"],
+                        )
+                    ),
+                )
+                event.add(
+                    "dtend",
+                    parser.parse(
+                        "%s %s"
+                        % (
+                            self.get_nearest_date(start_date, time["day"]),
+                            time["endAt"],
+                        )
+                    ),
+                )
+                event.add("rrule", {"freq": "WEEKLY", "until": parser.parse(end_date)})
                 cal.add_component(event)
 
-        with open(os.path.join('', 'calendar.ics'), 'wb') as f:
+        with open(os.path.join("", "calendar.ics"), "wb") as f:
             f.write(cal.to_ical())
         print("작업 완료!🙌")
 
