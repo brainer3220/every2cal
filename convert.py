@@ -29,15 +29,14 @@ class Convert():
                 "professor": subject.find("professor").get("value"),
             }
 
-
             single_subject["info"] = list(map(
                 lambda x: {
                     "day": x.get("day"),
-                    "place" : x.get("place"),
+                    "place": x.get("place"),
                     "startAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("starttime")) * 5, 60)),
                     "endAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("endtime")) * 5, 60))
                 }, subject.find("time").findall("data")
-                )
+            )
             )
             result.append(single_subject)
 
@@ -50,9 +49,12 @@ class Convert():
             for time in item["info"]:
                 event = Event()
                 event.add('summary', item["name"])
-                event.add('dtstart', parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["startAt"])))
-                event.add('dtend', parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["endAt"])))
-                event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
+                event.add('dtstart', parser.parse("%s %s" % (
+                    self.get_nearest_date(start_date, time["day"]), time["startAt"])))
+                event.add('dtend', parser.parse("%s %s" % (
+                    self.get_nearest_date(start_date, time["day"]), time["endAt"])))
+                event.add('rrule', {'freq': 'WEEKLY',
+                                    'until': parser.parse(end_date)})
                 cal.add_component(event)
 
         with open(os.path.join('', 'calendar.ics'), 'wb') as f:
@@ -64,7 +66,8 @@ class Convert():
         weekday = int(weekday)
 
         if start_date.weekday() >= weekday:
-            if start_date.weekday() > weekday: start_date += datetime.timedelta(days=7)
+            if start_date.weekday() > weekday:
+                start_date += datetime.timedelta(days=7)
             start_date -= datetime.timedelta(start_date.weekday() - weekday)
         else:
             start_date += datetime.timedelta(weekday - start_date.weekday())
