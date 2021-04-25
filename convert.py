@@ -24,10 +24,12 @@ class Convert():
 
         for subject in root.iter('subject'):
             name = subject.find("name").get("value")
-            single_subject = {}
+            single_subject = {
+                "name": name,
+                "professor": subject.find("professor").get("value"),
+            }
 
-            single_subject["name"] = name
-            single_subject["professor"] = subject.find("professor").get("value")
+
             single_subject["info"] = list(map(
                 lambda x: {
                     "day": x.get("day"),
@@ -53,10 +55,8 @@ class Convert():
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
-        f = open(os.path.join('', 'calendar.ics'), 'wb')
-        f.write(cal.to_ical())
-        f.close()
-
+        with open(os.path.join('', 'calendar.ics'), 'wb') as f:
+            f.write(cal.to_ical())
         print("작업 완료!🙌")
 
     def get_nearest_date(self, start_date, weekday):
