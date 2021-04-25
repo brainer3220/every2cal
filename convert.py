@@ -4,9 +4,10 @@ __author__ = "Hoseong Son <me@sookcha.com>"
 import datetime
 import os
 import xml.etree.ElementTree as ElementTree
+
+import requests
 from dateutil import parser
 from icalendar import Calendar, Event
-import requests
 
 
 class Convert:
