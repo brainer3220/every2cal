@@ -30,11 +30,10 @@ class Output(BaseModel):
     )
 
 
-def hello_world(input: Input) -> Output:
+def Every2Ical(input: Input) -> Output:
     """Returns ics file"""
 
     c = Convert(input.xml)
     ical = c.get_calendar(c.get_subjects(), str(input.begin_date), str(input.end_date))
 
     return Output(iCal=ical)
-
