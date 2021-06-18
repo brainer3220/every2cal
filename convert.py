@@ -53,11 +53,9 @@ class Convert():
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
-        f = open(os.path.join('', 'calendar.ics'), 'wb')
-        f.write(cal.to_ical())
-        f.close()
-
         print("작업 완료!🙌")
+
+        return cal.to_ical()
 
     def get_nearest_date(self, start_date, weekday):
         start_date = parser.parse(start_date)
