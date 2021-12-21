@@ -140,35 +140,33 @@
 
 <h1>학기가 시작하는 날과 끝나는 날을 넣어주세요.</h1>
 
-<div class="dates-wrapper group">
+<form action="/dwn_cal" method="get">
+    <div class="dates-wrapper group">
+        <div class="field clearfix date-range-start date-wrapper">
+            <div class="label">
+                <label for="start_date">시작하는 날</label>
+            </div>
+            <div class="input">
+                <input type="date" name="start_date" id="start_date" class="input-text" placeholder="dd/mm/yyyy"
+                       required="required">
+            </div>
+        </div>
+        <div class="field clearfix date-range-start date-wrapper">
+            <div class="label">
+                <label for="end_date">끝나는 날</label>
+            </div>
+            <div class="input">
+                <input type="date" name="end_date" id="end_date" class="input-text" placeholder="dd/mm/yyyy"
+                       required="required">
+            </div>
+        </div>
+        <h1>에브리타임 공개 시간표</h1>
+        <input type="text" name="schd_url" id="schd_url" placeholder="에브리타임 공개 시간표" required="required"/>
 
-    <div class="field clearfix date-range-start date-wrapper">
-        <div class="label">
-            <label for="start_date">시작하는 날</label>
-        </div>
-        <div class="input">
-            <input type="date" name="start_date" id="start_date" class="input-text" placeholder="dd/mm/yyyy"
-                   required="required">
-        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-large">변환하기
+        </button>
     </div>
-
-    <div class="field clearfix date-range-start date-wrapper">
-        <div class="label">
-            <label for="end_date">끝나는 날</label>
-        </div>
-        <div class="input">
-            <input type="date" name="end_date" id="end_date" class="input-text" placeholder="dd/mm/yyyy"
-                   required="required">
-        </div>
-    </div>
-    <h1>에브리타임 계정</h1>
-    <input type="text" name="user_id" id="user_id" placeholder="ID" required="required"/>
-    <input type="password" name="user_password" id="user_password" placeholder="Password" required="required"/>
-    <button type="submit" class="btn btn-primary btn-block btn-large"
-            onclick="getTableXML(user_id, user_password, '1', '2021')">변환하기
-    </button>
-
-</div>
+</form>
 
 
 <script>
@@ -204,7 +202,7 @@
 
 </script>
 
-<script src="javascript/GetTableXML.js"></script>
+<script src="../static/javascript/GetTableXML.js"></script>
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="/__/firebase/8.2.7/firebase-app.js"></script>
@@ -217,5 +215,5 @@
 <script src="/__/firebase/init.js"></script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/samsunginternet/OneUI-Web/oui-css/oui.css">
-<link rel="stylesheet" href="css/calendar.css">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="../static/css/calendar.css">
+<link rel="stylesheet" href="../static/css/style.css">
