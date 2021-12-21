@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Welcome to Firebase Hosting</title>
@@ -21,24 +21,80 @@
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
     <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
+        body {
+            background: #ECEFF1;
+            color: rgba(0, 0, 0, 0.87);
+            font-family: Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
+        #message {
+            background: white;
+            max-width: 360px;
+            margin: 100px auto 16px;
+            padding: 32px 24px;
+            border-radius: 3px;
+        }
+
+        #message h2 {
+            color: #ffa100;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0 0 8px;
+        }
+
+        #message h1 {
+            font-size: 22px;
+            font-weight: 300;
+            color: rgba(0, 0, 0, 0.6);
+            margin: 0 0 16px;
+        }
+
+        #message p {
+            line-height: 140%;
+            margin: 16px 0 24px;
+            font-size: 14px;
+        }
+
+        #message a {
+            display: block;
+            text-align: center;
+            background: #039be5;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: white;
+            padding: 16px;
+            border-radius: 4px;
+        }
+
+        #message, #message a {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        #load {
+            color: rgba(0, 0, 0, 0.4);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            body, #message {
+                margin-top: 0;
+                background: white;
+                box-shadow: none;
+            }
+
+            body {
+                border-top: 16px solid #ffa100;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
         const loadEl = document.querySelector('#load');
         // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
         // // The Firebase SDK is initialized and available here!
@@ -56,92 +112,95 @@
         // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
         try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+            let app = firebase.app();
+            let features = [
+                'auth',
+                'database',
+                'firestore',
+                'functions',
+                'messaging',
+                'storage',
+                'analytics',
+                'remoteConfig',
+                'performance',
+            ].filter(feature => typeof app[feature] === 'function');
+            loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
         } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+            console.error(e);
+            loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
         }
-      });
-    </script>
-  </body>
+    });
+</script>
+</body>
 </html>
-
 
 
 <div class="login">
 </div>
 
-  <h1>학기가 시작하는 날과 끝나는 날을 넣어주세요.</h1>
+<h1>학기가 시작하는 날과 끝나는 날을 넣어주세요.</h1>
 
-  <div class="dates-wrapper group">
+<div class="dates-wrapper group">
 
     <div class="field clearfix date-range-start date-wrapper">
-      <div class="label">
-        <label for="start_date">시작하는 날</label>
-      </div>
-      <div class="input">
-        <input type="date" name="start_date" id="start_date" class="input-text" placeholder="dd/mm/yyyy" required="required">
-      </div>
+        <div class="label">
+            <label for="start_date">시작하는 날</label>
+        </div>
+        <div class="input">
+            <input type="date" name="start_date" id="start_date" class="input-text" placeholder="dd/mm/yyyy"
+                   required="required">
+        </div>
     </div>
 
     <div class="field clearfix date-range-start date-wrapper">
-      <div class="label">
-        <label for="end_date">끝나는 날</label>
-      </div>
-      <div class="input">
-        <input type="date" name="end_date" id="end_date" class="input-text" placeholder="dd/mm/yyyy" required="required">
-      </div>
+        <div class="label">
+            <label for="end_date">끝나는 날</label>
+        </div>
+        <div class="input">
+            <input type="date" name="end_date" id="end_date" class="input-text" placeholder="dd/mm/yyyy"
+                   required="required">
+        </div>
     </div>
     <h1>에브리타임 계정</h1>
-    <input type="text" name="user_id" id="user_id" placeholder="ID" required="required" />
-    <input type="password" name="user_password" id="user_password" placeholder="Password" required="required" />
-    <button type="submit" class="btn btn-primary btn-block btn-large" onclick="getTableXML(user_id, user_password, '1', '2021')">변환하기</button>
+    <input type="text" name="user_id" id="user_id" placeholder="ID" required="required"/>
+    <input type="password" name="user_password" id="user_password" placeholder="Password" required="required"/>
+    <button type="submit" class="btn btn-primary btn-block btn-large"
+            onclick="getTableXML(user_id, user_password, '1', '2021')">변환하기
+    </button>
 
 </div>
 
 
 <script>
-  // if ( $('[type="date"]').prop('type') !== 'date' ) {
-  // }
+    // if ( $('[type="date"]').prop('type') !== 'date' ) {
+    // }
 
-  if ($("html").hasClass("no-touch")) {
-    var $input, $btn;
-    $(".date-wrapper").each(function (index) {
-      $input = $(this).find("input");
-      $btn = $(this).find(".calendar-btn");
-      $input.attr("type", "text");
-      var pickerStart = new Pikaday({
-        field: $input[0],
-        trigger: $btn[0],
-        container: $(this)[0],
-        format: "DD/MM/YYYY",
-        firstDay: 1
-      });
-      $btn.show();
-    });
-  } else {
-    $(".date-wrapper input").attr("type", "date");
-    $(".calendar-btn").hide();
-  }
+    if ($("html").hasClass("no-touch")) {
+        var $input, $btn;
+        $(".date-wrapper").each(function (index) {
+            $input = $(this).find("input");
+            $btn = $(this).find(".calendar-btn");
+            $input.attr("type", "text");
+            var pickerStart = new Pikaday({
+                field: $input[0],
+                trigger: $btn[0],
+                container: $(this)[0],
+                format: "DD/MM/YYYY",
+                firstDay: 1
+            });
+            $btn.show();
+        });
+    } else {
+        $(".date-wrapper input").attr("type", "date");
+        $(".calendar-btn").hide();
+    }
 
-  // $('#myForm').submit(function ()
-  // {
-  //     var action = '';
-  //     // compute action here...
-  //     $(this).attr('action', action);
-  // });
+    // $('#myForm').submit(function ()
+    // {
+    //     var action = '';
+    //     // compute action here...
+    //     $(this).attr('action', action);
+    // });
 
 </script>
 
