@@ -34,6 +34,18 @@ def dwn_cal():
         c = Convert(xml)
         c.get_calendar(c.get_subjects(), start_date, end_date, schd_url)
 
+        if request.method == 'POST':
+            sw = 0
+            files = os.listdir("./ical")
+            for x in files:
+                if x == request.form['file']:
+                    sw = 1
+
+            path = "./ical/"
+            return send_file(path + request.form['file'],
+                             attachment_filename=request.form['file'],
+                             as_attachment=True)
+
         print('test SUCESS')
     except:
         return '''
