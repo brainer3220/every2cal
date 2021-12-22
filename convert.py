@@ -4,9 +4,9 @@ __author__ = "Hoseong Son <me@sookcha.com>"
 import datetime
 import os
 import xml.etree.ElementTree as ElementTree
+
 from dateutil import parser
 from icalendar import Calendar, Event
-import requests
 
 
 class Convert():
@@ -31,11 +31,11 @@ class Convert():
             single_subject["info"] = list(map(
                 lambda x: {
                     "day": x.get("day"),
-                    "place" : x.get("place"),
+                    "place": x.get("place"),
                     "startAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("starttime")) * 5, 60)),
                     "endAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("endtime")) * 5, 60))
                 }, subject.find("time").findall("data")
-                )
+            )
             )
             result.append(single_subject)
 
@@ -48,8 +48,10 @@ class Convert():
             for time in item["info"]:
                 event = Event()
                 event.add('summary', item["name"])
-                event.add('dtstart', parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["startAt"])))
-                event.add('dtend', parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["endAt"])))
+                event.add('dtstart',
+                          parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["startAt"])))
+                event.add('dtend',
+                          parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["endAt"])))
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
