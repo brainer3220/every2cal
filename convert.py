@@ -55,7 +55,7 @@ class Convert():
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
-        f = open(os.path.join('', 'ical', f'{id}.ics'), 'wb')
+        f = open(os.path.join('ical', f'{id}.ics'), 'wb')
         f.write(cal.to_ical())
         f.close()
 
