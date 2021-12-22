@@ -1,4 +1,5 @@
 from convert import Convert
+import os
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -26,18 +27,19 @@ def dwn_cal():
 
     print(start_date, end_date, schd_url)
 
-    # try:
-    e = everytime.Everytime(schd_url)
-    xml = e.get_timetable()
+    try:
+        e = everytime.Everytime(schd_url)
+        xml = e.get_timetable()
 
-    c = Convert(xml)
-    c.get_calendar(c.get_subjects(), start_date, end_date)
+        c = Convert(xml)
+        c.get_calendar(c.get_subjects(), start_date, end_date, schd_url)
 
-    print('test SUCESS')
-    # except:
-    #     return '''
-    #     <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
-    #     '''
+        print('test SUCESS')
+    except:
+        return '''
+        <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
+        '''
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8888, debug=True)
