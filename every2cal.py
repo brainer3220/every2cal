@@ -1,8 +1,10 @@
 # -*- coding: utf8 -*-
-import getpass
-import everytime
 import argparse
+import getpass
+
+import everytime
 from convert import Convert
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -12,7 +14,7 @@ def main():
     args = parser.parse_args()
 
     xml = ""
-    if (args.xml):
+    if args.xml:
         xml = args.xml
 
     else:
@@ -29,19 +31,17 @@ def main():
     c.get_calendar(c.get_subjects(), args.begin, args.end)
 
 
-def DownCal(begin, end, username, password):
+def down_cal(begin, end, schd_url):
+    xml = ""
+    if schd_url:
+        xml = schd_url
+    else:
+        path = input('경로: ')
 
-    # year = input('가져올 년도 : ')
-    # semester = input('가져올 학기 : ')
-
-    e = everytime.Everytime(username, password)
-    xml = e.get_timetable(year, semester)
+        e = everytime.Everytime(path)
+        xml = e.get_timetable()
 
     c = Convert(xml)
     c.get_calendar(c.get_subjects(), begin, end)
 
     print('test SUCESS')
-
-
-if __name__ == '__main__':
-    main()
