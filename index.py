@@ -36,8 +36,6 @@ def dwn_cal():
 
         path = f'ical/{schd_url}.ics'
         return send_file(path, as_attachment=True)
-
-        print('test SUCESS')
     except:
         return '''
         <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
