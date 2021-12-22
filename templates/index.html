@@ -20,6 +20,7 @@
 
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
+
     <style media="screen">
         body {
             background: #ECEFF1;
@@ -92,7 +93,6 @@
     </style>
 </head>
 <body>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const loadEl = document.querySelector('#load');
@@ -134,39 +134,43 @@
 </body>
 </html>
 
-
 <div class="login">
 </div>
 
+<p class="oui-overlay-bubble-item">
 <h1>학기가 시작하는 날과 끝나는 날을 넣어주세요.</h1>
-
-<form action="/dwn_cal" method="get">
-    <div class="dates-wrapper group">
-        <div class="field clearfix date-range-start date-wrapper">
-            <div class="label">
-                <label for="start_date">시작하는 날</label>
+</p>
+<ul>
+    <form action="/dwn_cal" method="get">
+        <div class="dates-wrapper group">
+            <div class="field clearfix date-range-start date-wrapper">
+                <div class="label">
+                    <label for="start_date">시작하는 날</label>
+                </div>
+                <div class="input">
+                    <input type="date" name="start_date" id="start_date" class="input-text" placeholder="dd/mm/yyyy"
+                           required="required">
+                </div>
             </div>
-            <div class="input">
-                <input type="date" name="start_date" id="start_date" class="input-text" placeholder="dd/mm/yyyy"
-                       required="required">
+            <div class="field clearfix date-range-start date-wrapper">
+                <div class="label">
+                    <label for="end_date">끝나는 날</label>
+                </div>
+                <div class="input">
+                    <input type="date" name="end_date" id="end_date" class="input-text" placeholder="dd/mm/yyyy"
+                           required="required">
+                </div>
             </div>
+            <h1>에브리타임 공개 시간표</h1>
+            <input type="url" name="schd_url" id="schd_url" placeholder="에브리타임 공개 시간표" required="required"/>
+            <input type="submit" value="변환하기" class="oui-button oui-button--active">
+            </button>
         </div>
-        <div class="field clearfix date-range-start date-wrapper">
-            <div class="label">
-                <label for="end_date">끝나는 날</label>
-            </div>
-            <div class="input">
-                <input type="date" name="end_date" id="end_date" class="input-text" placeholder="dd/mm/yyyy"
-                       required="required">
-            </div>
-        </div>
-        <h1>에브리타임 공개 시간표</h1>
-        <input type="url" name="schd_url" id="schd_url" placeholder="에브리타임 공개 시간표" required="required"/>
+    </form>
+</ul>
 
-        <button type="submit" class="btn btn-primary btn-block btn-large">변환하기
-        </button>
-    </div>
-</form>
+{#/Go to privacypolicy hyperlink#}
+<a href="/privacypolicy" target="_blank">개인정보처리방침</a>
 
 
 <script>
@@ -214,30 +218,34 @@
 <!-- Initialize Firebase -->
 <script src="/__/firebase/init.js"></script>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/samsunginternet/OneUI-Web/oui-css/oui.css">
+<script src="https://cdn.jsdelivr.net/gh/SamsungInternet/OneUI-Web@master/oui-css/scripts/polyfill/focus-visible.js"
+        defer>
+</script>
+<script src="https://cdn.jsdelivr.net/gh/SamsungInternet/OneUI-Web@master/oui-css/scripts/oui.js" defer></script>
+<link rel="stylesheet" href="../static/css/OneUI-Web/oui.css">
 <link rel="stylesheet" href="../static/css/calendar.css">
 <link rel="stylesheet" href="../static/css/style.css">
 
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    // Import the functions you need from the SDKs you need
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import {getAnalytics} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCxQbb0uauM2mFNTytsnDu-dhmSqfirf10",
-    authDomain: "every2cal.firebaseapp.com",
-    projectId: "every2cal",
-    storageBucket: "every2cal.appspot.com",
-    messagingSenderId: "961780731455",
-    appId: "1:961780731455:web:d036adf15e461e72fdb28a",
-    measurementId: "G-3MBK0HHFE0"
-  };
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyCxQbb0uauM2mFNTytsnDu-dhmSqfirf10",
+        authDomain: "every2cal.firebaseapp.com",
+        projectId: "every2cal",
+        storageBucket: "every2cal.appspot.com",
+        messagingSenderId: "961780731455",
+        appId: "1:961780731455:web:d036adf15e461e72fdb28a",
+        measurementId: "G-3MBK0HHFE0"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
 </script>

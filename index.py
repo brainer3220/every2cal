@@ -1,10 +1,10 @@
-from convert import Convert
-import os
 from flask import Flask
 from flask import render_template
 from flask import request
 from flask import send_file
+
 import everytime
+from convert import Convert
 
 app = Flask(__name__)
 
@@ -42,6 +42,11 @@ def dwn_cal():
         return '''
         <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
         '''
+
+
+@app.route('/privacypolicy', methods=['GET'])
+def privacy_policy():
+    return render_template('privacypolicy.html')
 
 
 if __name__ == '__main__':
