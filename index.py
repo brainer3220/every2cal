@@ -47,5 +47,10 @@ def privacy_policy():
     return render_template('privacypolicy.html')
 
 
+@app.route('/opensourcelicense', methods=['GET'])
+def opensource_license():
+    return render_template('opensourcelicense.html')
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8888, debug=True)
