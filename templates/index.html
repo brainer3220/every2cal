@@ -141,9 +141,11 @@
 </style>
 
 <script>
+    import firebase from "firebase/compat";
+
     const analytics = firebase.analytics();
     firebase.analytics().logEvent('notification_received');
-    
+
     document.addEventListener('DOMContentLoaded', function () {
         const loadEl = document.querySelector('#load');
         // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
