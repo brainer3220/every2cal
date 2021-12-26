@@ -1,10 +1,15 @@
+import boto3
+import everytime
+import os
+from convert import Convert
 from flask import Flask
 from flask import render_template
 from flask import request
 from flask import send_file
 
-import everytime
-from convert import Convert
+ACCESS_KEY_ID = os.environ['EVERY_CAL_ACCESS_KEY_ID']
+SECRET_KEY_ID = os.environ['EVERY_CAL_SECRET_KEY_ID']
+BUCKET_NAME = os.environ['BUCKET_NAME']
 
 app = Flask(__name__)
 
@@ -34,7 +39,12 @@ def dwn_cal():
         c = Convert(xml)
         c.get_calendar(c.get_subjects(), start_date, end_date, schd_url)
 
-        path = f'ical/{schd_url}.ics'
+        path = f'/tmp/{schd_url}.ics'
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=ACCESS_KEY_ID,
+            aws_secret_access_key=SECRET_KEY_ID)
+        s3.upload_file(path, BUCKET_NAME, f"ical/{path[5:]}")
         return send_file(path, as_attachment=True)
     except:
         return '''
