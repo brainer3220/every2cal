@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.8
@@ -25,6 +24,7 @@ jobs:
         pip install -r requirements.txt
     - name: deploy with zappa
       env:
-        VIRTUAL_ENV: ./venv
+        AWS_ACCESS_KEY_ID: ${{ secrets.EVERY_CAL_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.EVERY_CAL_SECRET_KEY_ID }}
       run: |
         zappa update dev
