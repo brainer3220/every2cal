@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/sookcha/every2cal.svg?branch=master)](https://travis-ci.com/sookcha/every2cal)
 
-![](https://i.imgur.com/O098TZc.png)
+![](everycal.drawio.png)
 
 Every2Cal은 Everytime 시간표를 .ics 형식으로 내보내주는 Python 프로그램입니다.
 
