@@ -1,0 +1,11 @@
+{
+    "dev": {
+        "app_function": "index.app",
+        "aws_region": "ap-northeast-2",
+        "profile_name": "brainer",
+        "project_name": "every2cal",
+        "domain": "everycal.com",
+        "runtime": "python3.8",
+        "s3_bucket": "brainer-everycal-static"
+    }
+}
