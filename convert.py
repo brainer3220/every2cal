@@ -55,8 +55,12 @@ class Convert():
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
-        f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'wb')
-        f.write(cal.to_ical())
+        f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'w+')
+        f.write("BEGIN:VCALENDAR\nVERSION:2.0")
+        f.close()
+
+        f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'ab')
+        f.write(cal.to_ical()[15:])
         f.close()
 
         print("작업 완료!🙌")
