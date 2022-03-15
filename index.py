@@ -49,6 +49,7 @@ def dwn_cal():
     except:
         return '''
         <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
+        <a href="https://forms.gle/whDG3Hf5V4Fsqz2cA" target="_blank">문의하기</a>
         '''
 
 
