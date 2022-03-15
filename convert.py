@@ -55,15 +55,19 @@ class Convert():
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
-        f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'w+')
-        f.write("BEGIN:VCALENDAR\nVERSION:2.0")
-        f.close()
 
-        f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'ab')
-        f.write(cal.to_ical()[15:])
-        f.close()
+        if len(str(cal.to_ical())) <= 39:
+            return None
+        else:
+            f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'w+')
+            f.write("BEGIN:VCALENDAR\nVERSION:2.0")
+            f.close()
 
-        print("작업 완료!🙌")
+            f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'ab')
+            f.write(cal.to_ical()[15:])
+            f.close()
+
+            print("작업 완료!🙌")
 
     def get_nearest_date(self, start_date, weekday):
         start_date = parser.parse(start_date)
