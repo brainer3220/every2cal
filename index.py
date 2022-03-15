@@ -50,8 +50,27 @@ def dwn_cal():
         return send_file(path, as_attachment=True)
     except:
         return '''
-        <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
-        <a href="https://forms.gle/whDG3Hf5V4Fsqz2cA" target="_blank">문의하기</a>
+        <div class="main-head">
+    <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
+</div>
+
+<div class="google-forms">
+    <iframe
+        src="https://docs.google.com/forms/d/e/1FAIpQLSeZnoKueveJLDLz-81uHB9r-FXqHm_HZuMTwQ6tGk6eTsQdmg/viewform?embedded=true"
+        width="640" height="1088" frameborder="0" marginheight="0" marginwidth="0">로드 중…</iframe>
+</div>
+<style>
+    .google-forms {
+        margin: auto;
+        /* margin-left: auto; */
+        width: max-content;
+    }
+
+    .main-head {
+        margin: auto;
+        width: max-content;
+    }
+</style>
         '''
 
 
