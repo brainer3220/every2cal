@@ -24,11 +24,7 @@ class Convert():
 
         for subject in root.iter('subject'):
             name = subject.find("name").get("value")
-            single_subject = {}
-
-            single_subject["name"] = name
-            single_subject["professor"] = subject.find("professor").get("value")
-            single_subject["info"] = list(map(
+            single_subject = {"name": name, "professor": subject.find("professor").get("value"), "info": list(map(
                 lambda x: {
                     "day": x.get("day"),
                     "place": x.get("place"),
@@ -36,7 +32,8 @@ class Convert():
                     "endAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("endtime")) * 5, 60))
                 }, subject.find("time").findall("data")
             )
-            )
+            )}
+
             result.append(single_subject)
 
         return result
