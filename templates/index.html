@@ -97,48 +97,27 @@
 </script>
 <script src="https://code.jquery.com/jquery-latest.js"></script>
 
-<div id="myModal" class="modal">
-    <!-- Modal content -->
-    <div class="oui-bubble">
-        <p class="oui-overlay-bubble-item">사용방법</p>
-        <ul>
-            <li class="oui-bubble-item">에브리타임의 시간표를 열어주세요.</li>
-            <li class="oui-bubble-item">우측 상단 설정 버튼을 눌러주세요.</li>
-            <li class="oui-bubble-item">공개 범위를 '전체 공개'로 바꿔주세요.</li>
-            <li class="oui-bubble-item">그리고 다시 설정에서 'URL 공유'를 통해 복사한 URL을 붙여주세요.</li>
-            <li class="oui-bubble-item">모든 것이 완료됐어요. 그럼 이제 에브리타임을 끄고 즐기세요.</li>
-        </ul>
-        <input type="button" value="닫기" class="oui-button oui-button--active" onClick=close_pop()>
-
+<div class="oui-dialog-mask" id="guideModal"></div>
+<div class="oui-dialog" id="guideModalContent">
+    <div class="oui-dialog-header">
+        사용방법
     </div>
+    <ul>
+        <li class="oui-bubble-item">에브리타임의 시간표를 열어주세요.</li>
+        <li class="oui-bubble-item">우측 상단 설정 버튼을 눌러주세요.</li>
+        <li class="oui-bubble-item">공개 범위를 '전체 공개'로 바꿔주세요.</li>
+        <li class="oui-bubble-item">그리고 다시 설정에서 'URL 공유'를 통해 복사한 URL을 붙여주세요.</li>
+        <li class="oui-bubble-item">모든 것이 완료됐어요. 그럼 이제 에브리타임을 끄고 즐기세요.</li>
+    </ul>
+    <button class="oui-button oui-button--active" id="closeBtn">닫기</button>
 </div>
-<script type="text/javascript">
 
-    jQuery(document).ready(function () {
-        $('#myModal').show();
+<script>
+    document.querySelector('#closeBtn').addEventListener('click', function () {
+        document.querySelector('#guideModal').style.display = 'none';
+        document.querySelector('#guideModalContent').style.display = 'none';
     });
-
-    //팝업 Close 기능
-    function close_pop(flag) {
-        $('#myModal').hide();
-    }
-
 </script>
-<style>
-    /* The Modal (background) */
-    .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 25%;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0, 0, 0); /* Fallback color */
-        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-    }
-</style>
 </html>
 
 {#<link rel="stylesheet" href="../static/css/calendar.css">#}
