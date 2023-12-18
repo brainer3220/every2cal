@@ -52,7 +52,6 @@ class Convert():
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
                 cal.add_component(event)
 
-
         if len(str(cal.to_ical())) <= 39:
             return None
         else:

@@ -9,9 +9,9 @@ function getTableXML(userid, password, semester, year) {
     console.log("Call getTableXML function")
 
     xmlHttp.onreadystatechange = function () {
-      if (this.status === 200 && this.readyState === this.DONE) {
-        console.log(xmlHttp.responseText)
-      }
+        if (this.status === 200 && this.readyState === this.DONE) {
+            console.log(xmlHttp.responseText)
+        }
     }
 
     // xmlHttp.open('CONNECT','https://everytime.kr', true)

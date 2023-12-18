@@ -1,6 +1,5 @@
-import os
-
 import boto3
+import os
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -83,13 +82,16 @@ def privacy_policy():
 def opensource_license():
     return render_template('opensourcelicense.html')
 
+
 @app.route('/robots.txt', methods=['GET'])
 def robots_txt():
     return render_template('robots.txt')
 
+
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap_xml():
     return render_template('sitemap.xml')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8888, debug=False)
