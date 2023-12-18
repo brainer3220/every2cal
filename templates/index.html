@@ -19,29 +19,28 @@
         <!-- Interaction area -->
         <form action="/dwn_cal" method="get">
             <div class="oui-bubble">
-                <p class="oui-overlay-bubble-item">에브리타임 공개 시간표</p>
-                <div class="field clearfix date-range-start date-wrapper">
-                    <div class="label">
-                        <label for="start_date">시작하는 날</label>
-                    </div>
-                    <div class="input">
-                        <input type="date" name="start_date" value="2023-12-22" id="start_date" class="input-text"
-                               placeholder="dd/mm/yyyy"
-                               required="required">
-                    </div>
+                <div class="large-font">
+                    <label for="start_date">시작하는 날</label>
                 </div>
-                <div class="field clearfix date-range-start date-wrapper">
-                    <div class="label">
-                        <label for="end_date">끝나는 날</label>
-                    </div>
-                    <div class="input">
-                        <input type="date" name="end_date" value="2024-02-15" id="end_date" class="input-text"
-                               placeholder="dd/mm/yyyy"
-                               required="required">
-                    </div>
+                <div class="input">
+                    <input type="date" name="start_date" value="2023-12-22" id="start_date" class="input-text"
+                           placeholder="dd/mm/yyyy"
+                           required="required">
+                </div>
+                <div class="large-font">
+                    <label for="end_date">끝나는 날</label>
+                </div>
+                <div class="input">
+                    <input type="date" name="end_date" value="2024-02-15" id="end_date" class="input-text"
+                           placeholder="dd/mm/yyyy"
+                           required="required">
+                </div>
+                <div class="large-font">
+                    <label for="schd_url">에브리타임 공개 시간표</label>
                 </div>
                 <ul>
-                    <input type="url" name="schd_url" id="schd_url" placeholder="https://everytime.kr/@ABcD12efgHijkL"
+                    <input type="url" name="schd_url" id="schd_url"
+                           placeholder="https://everytime.kr/@ABcD12efgHijkL"
                            required="required"/>
                     </button>
                 </ul>
@@ -233,5 +232,51 @@
         width: 250px;
         margin: auto;
         margin-top: 20px;
+    }
+
+    .oui-bubble {
+        display: flex;
+        flex-direction: column;
+    }
+
+    h1 {
+        color: #5C6BC0;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .field {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input[type="date"],
+    input[type="url"],
+    a {
+        display: block;
+        margin: 15px 0;
+        color: #5C6BC0;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .large-font, .field input {
+        text-align: left;
+    }
+
+    .label label {
+        width: 100%;
+    }
+
+    .large-font {
+        font-size: 20px; /* Adjust this value as needed */
     }
 </style>
