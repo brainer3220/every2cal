@@ -1,5 +1,6 @@
-import boto3
 import os
+
+import boto3
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -17,7 +18,7 @@ app = Flask(__name__)
 
 @app.route("/")
 @app.route("/home")
-def home():
+def index():
     return render_template("index.html")
 
 
