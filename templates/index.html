@@ -12,11 +12,9 @@
 <body>
 <main class="container">
     <div class="oui-viewing">
-        <!-- Viewing area -->
         <h1>학기가 시작하는 날과 끝나는 날을 넣어주세요.</h1>
     </div>
     <div class="oui-interaction">
-        <!-- Interaction area -->
         <form action="/dwn_cal" method="get">
             <div class="oui-bubble">
                 <div class="large-font">
@@ -24,28 +22,22 @@
                 </div>
                 <div class="input">
                     <input type="date" name="start_date" value="2023-12-22" id="start_date" class="input-text"
-                           placeholder="dd/mm/yyyy"
-                           required="required">
+                           placeholder="dd/mm/yyyy" required="required">
                 </div>
                 <div class="large-font">
                     <label for="end_date">끝나는 날</label>
                 </div>
                 <div class="input">
                     <input type="date" name="end_date" value="2024-02-15" id="end_date" class="input-text"
-                           placeholder="dd/mm/yyyy"
-                           required="required">
+                           placeholder="dd/mm/yyyy" required="required">
                 </div>
                 <div class="large-font">
                     <label for="schd_url">에브리타임 공개 시간표</label>
                 </div>
-                <ul>
-                    <input type="url" name="schd_url" id="schd_url"
-                           placeholder="https://everytime.kr/@ABcD12efgHijkL"
-                           required="required"/>
-                    </button>
-                </ul>
+                <input type="url" name="schd_url" id="schd_url"
+                       placeholder="https://everytime.kr/@ABcD12efgHijkL" required="required"/>
 
-                <input type="submit" value="변환하기" class="oui-button oui-button--active">
+                <input type="submit" value="변환하기" class="oui-button oui-button--active" id="convert-button">
             </div>
         </form>
 
@@ -54,21 +46,20 @@
         <a href="https://forms.gle/whDG3Hf5V4Fsqz2cA" target="_self">문의하기</a>
 
         <div class="main-center-ad">
-            <ins class="kakao_ad_area" style="display:none;"
+            <ins class="k
+
+akao_ad_area" style="display:none;"
                  data-ad-unit="DAN-2RSU21xjAzhtuvZR"
                  data-ad-width="250"
                  data-ad-height="250"></ins>
-            <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
-
             <ins class="kakao_ad_area" style="display:none;"
                  data-ad-unit="DAN-QygTfgeCJALV5Igd"
                  data-ad-width="250"
                  data-ad-height="250"></ins>
-            <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
         </div>
-
     </div>
 </main>
+<script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
 </body>
 <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
@@ -278,5 +269,13 @@
 
     .large-font {
         font-size: 20px; /* Adjust this value as needed */
+    }
+
+    #convert-button {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+        margin-bottom: 0;
     }
 </style>
