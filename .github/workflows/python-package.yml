@@ -22,6 +22,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.EVERY_CAL_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.EVERY_CAL_SECRET_KEY_ID }}
+          aws-region: ap-northeast-2
       - name: deploy with zappa
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.EVERY_CAL_ACCESS_KEY_ID }}
