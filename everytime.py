@@ -1,8 +1,12 @@
 import requests
-
+from urllib.parse import urlparse
 
 class Everytime:
     def __init__(self, path):
+        url = urlparse(path)
+        if url.netloc == "everytime.kr":
+            self.path = url.path.replace("/@", "")
+            return
         self.path = path
 
     def get_timetable(self):

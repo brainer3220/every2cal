@@ -50,8 +50,9 @@ class Convert():
                 event.add('dtend',
                           parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["endAt"])))
                 event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
+                if time["place"] != "":
+                    event.add('location', time["place"])
                 cal.add_component(event)
-
 
         if len(str(cal.to_ical())) <= 39:
             return None
