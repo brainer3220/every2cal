@@ -1,10 +1,12 @@
 icalendar>=4.0.3
 BeautifulSoup4>=4.6.3
-requests>=2.20.1
-Flask==2.3.3
+requests>=2.31.0
+Flask>=2.2.5
 gunicorn>=20.0.4
 gevent
 boto3
 zappa
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
 wheel>=0.38.0 # not directly required, pinned by Snyk to avoid a vulnerability
+certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
+werkzeug>=2.2.3 # not directly required, pinned by Snyk to avoid a vulnerability
