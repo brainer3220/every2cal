@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, send_file
 import boto3
 import everytime
 from convert import Convert
+import dotenv
 
 ACCESS_KEY_ID = os.environ['EVERY_CAL_ACCESS_KEY_ID']
 SECRET_KEY_ID = os.environ['EVERY_CAL_SECRET_KEY_ID']
@@ -97,4 +98,5 @@ def sitemap_xml():
     return render_template('sitemap.xml')
 
 if __name__ == '__main__':
+    if os.path.exists('.env'): dotenv.load_dotenv()
     app.run(host='0.0.0.0', port=8888, debug=False)
