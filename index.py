@@ -1,27 +1,36 @@
-import os
 import logging
+import os
+from typing import Optional
+
+import dotenv
 from flask import Flask, render_template, request, send_file
 import boto3
+
 import everytime
 from convert import Convert
-import dotenv
-
-ACCESS_KEY_ID = os.environ['EVERY_CAL_ACCESS_KEY_ID']
-SECRET_KEY_ID = os.environ['EVERY_CAL_SECRET_KEY_ID']
-BUCKET_NAME = os.environ['BUCKET_NAME']
 
 app = Flask(__name__)
 
-# Set up logging
+# Set up logging early
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def upload_to_s3(file_path, bucket_name, s3_path):
-    s3 = boto3.client(
-        's3',
-        aws_access_key_id=ACCESS_KEY_ID,
-        aws_secret_access_key=SECRET_KEY_ID
-    )
+
+def _get_env(name: str, default: Optional[str] = None) -> Optional[str]:
+    val = os.getenv(name, default)
+    if val is None:
+        logger.warning("Environment variable %s is not set", name)
+    return val
+
+
+def upload_to_s3(file_path: str, bucket_name: str, s3_path: str) -> None:
+    """Upload a local file to S3."""
+    access_key = _get_env("EVERY_CAL_ACCESS_KEY_ID")
+    secret_key = _get_env("EVERY_CAL_SECRET_KEY_ID")
+    if not access_key or not secret_key:
+        raise RuntimeError("S3 credentials are not configured")
+
+    s3 = boto3.client("s3", aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     s3.upload_file(file_path, bucket_name, s3_path)
 
 @app.route("/")
@@ -38,26 +47,31 @@ def dwn_cal():
     if not start_date or not end_date or not schd_url:
         return "Missing required parameters", 400
 
+    # Normalize dates expected by converter (YYYYMMDD)
     start_date = ''.join(start_date.split('-'))
     end_date = ''.join(end_date.split('-'))
-    schd_url = schd_url[22:]
+    # Expect an identifier after the Everytime URL prefix
+    identifier = schd_url[22:]
 
-    logger.info(f"Processing timetable: {schd_url} from {start_date} to {end_date}")
+    logger.info("Processing timetable: %s from %s to %s", identifier, start_date, end_date)
 
     try:
         e = everytime.Everytime(schd_url)
         xml = e.get_timetable()
 
         c = Convert(xml)
-        calendar_path = c.get_calendar(c.get_subjects(), start_date, end_date, schd_url)
+        calendar_path = c.get_calendar(c.get_subjects(), start_date, end_date, identifier)
+        if not calendar_path:
+            return "No events found.", 404
 
-        path = f'/tmp/{schd_url}.ics'
-        upload_to_s3(path, BUCKET_NAME, f"ical/{os.path.basename(path)}")
+        bucket_name = _get_env('BUCKET_NAME')
+        if bucket_name:
+            upload_to_s3(calendar_path, bucket_name, f"ical/{os.path.basename(calendar_path)}")
 
-        return send_file(path, as_attachment=True)
+        return send_file(calendar_path, as_attachment=True, download_name=f"{identifier}.ics")
 
     except Exception as e:
-        logger.error(f"Error processing timetable: {e}")
+        logger.exception("Error processing timetable")
         return '''
         <div class="main-head">
             <h1>로그인 정보 혹은 시간표 존재 유무를 다시 확인해주세요.</h1>
@@ -95,8 +109,13 @@ def robots_txt():
 
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap_xml():
-    return render_template('sitemap.xml')
+    # Optional: If you have a template for sitemap.xml, render it; otherwise 404
+    try:
+        return render_template('sitemap.xml')
+    except Exception:
+        return "", 404
 
 if __name__ == '__main__':
-    if os.path.exists('.env'): dotenv.load_dotenv()
+    if os.path.exists('.env'):
+        dotenv.load_dotenv()
     app.run(host='0.0.0.0', port=8888, debug=False)

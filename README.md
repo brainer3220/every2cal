@@ -12,10 +12,20 @@ Everytime 앱 보다 캘린더로 일정을 관리하는게 편한 마음에 항
 
 ## 어떻게 사용하나요?
 
-`python every2cal.py --begin 학기가 시작하는 날짜 --end 학기가 끝나는 날짜`
+CLI 예시
+
+```
+python every2cal.py --source https://everytime.kr/@<식별자> --begin 20240304 --end 20240621
+```
 
 로 사용합니다.
 
 Every2Cal은 Everytime 내부의 AJAX로 불러와지는 .xml 형식 시간표를 활용하고 있습니다.
 
 추후에 이미지 기반 시간표 읽어오기도 지원 예정입니다.
+
+웹 서버 실행(Flask)
+
+```
+python index.py
+```
