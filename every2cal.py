@@ -1,47 +1,39 @@
-# -*- coding: utf8 -*-
+"""CLI entry point for converting Everytime timetable into .ics."""
+
+from __future__ import annotations
+
 import argparse
-import getpass
+from typing import Optional
 
 import everytime
 from convert import Convert
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--xml", type=str, help="Location of timetable xml file", required=False)
-    parser.add_argument("--begin", type=str, help="Semester beginning date", required=True)
-    parser.add_argument("--end", type=str, help="Semester ending date", required=True)
-    args = parser.parse_args()
+def main(argv: Optional[list[str]] = None) -> int:
+    parser = argparse.ArgumentParser(description="Everytime timetable to .ics converter")
+    parser.add_argument("--source", type=str, help="Path or Everytime URL/identifier", required=False)
+    parser.add_argument("--begin", type=str, help="Semester beginning date (YYYYMMDD)", required=True)
+    parser.add_argument("--end", type=str, help="Semester ending date (YYYYMMDD)", required=True)
+    args = parser.parse_args(argv)
 
-    xml = ""
-    if args.xml:
-        xml = args.xml
-
-    else:
-        username = input('에브리타임 아이디 : ')
-        password = getpass.getpass()
-
-        year = input('가져올 년도 : ')
-        semester = input('가져올 학기 : ')
-
-        e = everytime.Everytime(username, password)
-        xml = e.get_timetable(year, semester)
-
-    c = Convert(xml)
-    c.get_calendar(c.get_subjects(), args.begin, args.end)
-
-
-def down_cal(begin, end, schd_url):
-    xml = ""
-    if schd_url:
-        xml = schd_url
-    else:
-        path = input('경로: ')
-
-        e = everytime.Everytime(path)
+    if args.source:
+        src = args.source
+        e = everytime.Everytime(src)
         xml = e.get_timetable()
+    else:
+        # Expect XML to be piped via stdin or provided as file path; keep simple
+        raise SystemExit("--source is required when using CLI")
 
     c = Convert(xml)
-    c.get_calendar(c.get_subjects(), begin, end)
+    # Use the identifier portion as file name if a URL was provided
+    identifier = (args.source or "timetable").split("/")[-1]
+    cal_path = c.get_calendar(c.get_subjects(), args.begin, args.end, identifier)
+    if not cal_path:
+        print("No events found.")
+        return 1
+    print(f"Generated: {cal_path}")
+    return 0
 
-    print('test SUCESS')
+
+if __name__ == "__main__":
+    raise SystemExit(main())

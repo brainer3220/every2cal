@@ -1,4 +1,19 @@
-*.xml
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Environments
+.env
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Local output
+/tmp/
+*.ics*.xml
 .idea
 .venv
 __pycache__
