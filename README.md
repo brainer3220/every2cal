@@ -12,9 +12,10 @@ Everytime 앱 보다 캘린더로 일정을 관리하는게 편한 마음에 항
 
 ## 어떻게 사용하나요?
 
-`python every2cal.py --begin 학기가 시작하는 날짜 --end 학기가 끝나는 날짜`
+`python every2cal.py --begin 학기가 시작하는 날짜 --end 학기가 끝나는 날짜 --identifier 공유된 시간표 URL`
 
-로 사용합니다.
+와 같이 사용할 수 있습니다. 공유된 시간표 URL 대신 `--xml` 옵션으로 직접 내려받은 XML 파일을 지정할 수도 있고,
+`--output` 옵션을 통해 생성되는 iCalendar 파일의 저장 위치를 제어할 수 있습니다.
 
 Every2Cal은 Everytime 내부의 AJAX로 불러와지는 .xml 형식 시간표를 활용하고 있습니다.
 

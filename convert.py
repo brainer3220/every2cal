@@ -1,80 +1,199 @@
-# -*- coding: utf8 -*-
-__author__ = "Hoseong Son <me@sookcha.com>"
+"""Utilities for turning Everytime timetables into iCalendar files."""
+from __future__ import annotations
 
-import datetime
-import os
+import datetime as dt
+import logging
+import re
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional, Sequence, Union
 import xml.etree.ElementTree as ElementTree
 
-from dateutil import parser
+from dateutil import parser as date_parser
 from icalendar import Calendar, Event
 
+logger = logging.getLogger(__name__)
 
-class Convert():
-    def __init__(self, filename):
-        self.filename = filename
+# The Everytime timetable expresses time as 5 minute slots.
+_MINUTES_PER_SLOT = 5
+_DEFAULT_OUTPUT_DIRECTORY = Path("/tmp")
 
-    def get_subjects(self):
-        result = []
-        try:
-            tree = ElementTree.parse(self.filename)
-            root = tree.getroot()
-        except:
-            tree = ElementTree.fromstring(self.filename)
-            root = tree
 
-        for subject in root.iter('subject'):
-            name = subject.find("name").get("value")
-            single_subject = {"name": name, "professor": subject.find("professor").get("value"), "info": list(map(
-                lambda x: {
-                    "day": x.get("day"),
-                    "place": x.get("place"),
-                    "startAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("starttime")) * 5, 60)),
-                    "endAt": '{:02d}:{:02d}'.format(*divmod(int(x.get("endtime")) * 5, 60))
-                }, subject.find("time").findall("data")
-            )
-            )}
+@dataclass(frozen=True)
+class MeetingTime:
+    """Represents a single lecture/practice time for a subject."""
 
-            result.append(single_subject)
+    weekday: int
+    location: str
+    start_time: dt.time
+    end_time: dt.time
 
-        return result
 
-    def get_calendar(self, timetable, start_date, end_date, id):
-        cal = Calendar()
+@dataclass(frozen=True)
+class Subject:
+    """Container for the metadata and meeting times of a subject."""
 
-        for item in timetable:
-            for time in item["info"]:
-                event = Event()
-                event.add('summary', item["name"])
-                event.add('dtstart',
-                          parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["startAt"])))
-                event.add('dtend',
-                          parser.parse("%s %s" % (self.get_nearest_date(start_date, time["day"]), time["endAt"])))
-                event.add('rrule', {'freq': 'WEEKLY', 'until': parser.parse(end_date)})
-                if time["place"] != "":
-                    event.add('location', time["place"])
-                cal.add_component(event)
+    name: str
+    professor: str
+    meetings: Sequence[MeetingTime]
 
-        if len(str(cal.to_ical())) <= 39:
+
+class Convert:
+    """Parse Everytime timetable XML data and write iCalendar files."""
+
+    def __init__(self, xml_source: Union[str, Path]):
+        """Initialise the converter with either raw XML or a file path."""
+
+        self._xml_source = xml_source
+
+    def get_subjects(self) -> List[Subject]:
+        """Return the subjects parsed from the timetable XML."""
+
+        root = self._load_xml_root()
+        subjects: List[Subject] = []
+
+        for subject_node in root.iter("subject"):
+            name = self._get_attribute(subject_node.find("name"), "value")
+            if not name:
+                logger.debug("Skipping subject without a name: %s", ElementTree.tostring(subject_node))
+                continue
+
+            professor = self._get_attribute(subject_node.find("professor"), "value")
+            time_node = subject_node.find("time")
+            meetings = [self._parse_meeting(data_node) for data_node in time_node.findall("data")] if time_node else []
+
+            subjects.append(Subject(name=name, professor=professor, meetings=meetings))
+
+        return subjects
+
+    def get_calendar(
+        self,
+        timetable: Sequence[Subject],
+        start_date: str,
+        end_date: str,
+        identifier: str,
+        *,
+        output_path: Optional[Path] = None,
+    ) -> Optional[Path]:
+        """Create an iCalendar file from the supplied timetable."""
+
+        if not timetable:
+            logger.info("Timetable is empty; nothing to export.")
             return None
-        else:
-            f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'w+')
-            f.write("BEGIN:VCALENDAR\nVERSION:2.0")
-            f.close()
 
-            f = open(os.path.join('/', 'tmp', f'{id}.ics'), 'ab')
-            f.write(cal.to_ical()[15:])
-            f.close()
+        calendar = Calendar()
+        calendar.add("prodid", "-//Every2Cal//EN")
+        calendar.add("version", "2.0")
 
-            print("작업 완료!🙌")
+        base_date = self._parse_date(start_date)
+        until = date_parser.parse(end_date)
 
-    def get_nearest_date(self, start_date, weekday):
-        start_date = parser.parse(start_date)
-        weekday = int(weekday)
+        for subject in timetable:
+            for meeting in subject.meetings:
+                event = Event()
+                event.add("summary", subject.name)
+                event.add("dtstart", self._combine_datetime(base_date, meeting.weekday, meeting.start_time))
+                event.add("dtend", self._combine_datetime(base_date, meeting.weekday, meeting.end_time))
+                event.add("rrule", {"freq": "WEEKLY", "until": until})
+                if meeting.location:
+                    event.add("location", meeting.location)
+                if subject.professor:
+                    event.add("description", subject.professor)
+                calendar.add_component(event)
 
-        if start_date.weekday() >= weekday:
-            if start_date.weekday() > weekday: start_date += datetime.timedelta(days=7)
-            start_date -= datetime.timedelta(start_date.weekday() - weekday)
-        else:
-            start_date += datetime.timedelta(weekday - start_date.weekday())
+        has_events = any(component.name == "VEVENT" for component in calendar.subcomponents)
+        if not has_events:
+            logger.warning("The timetable did not contain any meeting information.")
+            return None
 
-        return start_date
+        destination = self._resolve_output_path(identifier, output_path)
+        with destination.open("wb") as calendar_file:
+            calendar_file.write(calendar.to_ical())
+
+        logger.info("Created calendar at %s", destination)
+        return destination
+
+    def _load_xml_root(self) -> ElementTree.Element:
+        """Load and return the root element of the timetable XML."""
+
+        source = self._xml_source
+
+        try:
+            if isinstance(source, Path):
+                return ElementTree.parse(source).getroot()
+
+            potential_path = Path(str(source))
+            if potential_path.exists():
+                return ElementTree.parse(potential_path).getroot()
+
+            return ElementTree.fromstring(str(source))
+        except (OSError, ElementTree.ParseError) as exc:
+            raise ValueError("Failed to parse timetable XML") from exc
+
+    @staticmethod
+    def _get_attribute(element: Optional[ElementTree.Element], attribute: str, default: str = "") -> str:
+        if element is None:
+            return default
+        return element.get(attribute, default)
+
+    def _parse_meeting(self, element: ElementTree.Element) -> MeetingTime:
+        try:
+            weekday = int(self._get_attribute(element, "day"))
+        except ValueError as exc:
+            raise ValueError("Invalid weekday value in timetable") from exc
+
+        start_time = self._parse_time_slot(self._get_attribute(element, "starttime"))
+        end_time = self._parse_time_slot(self._get_attribute(element, "endtime"))
+        location = self._get_attribute(element, "place")
+
+        return MeetingTime(weekday=weekday, location=location, start_time=start_time, end_time=end_time)
+
+    @staticmethod
+    def _parse_time_slot(value: str) -> dt.time:
+        if not value:
+            raise ValueError("Encountered an empty time slot value in timetable")
+        try:
+            total_minutes = int(value) * _MINUTES_PER_SLOT
+        except ValueError as exc:
+            raise ValueError("Time slot value is not an integer") from exc
+
+        hours, minutes = divmod(total_minutes, 60)
+        return dt.time(hour=hours, minute=minutes)
+
+    @staticmethod
+    def _parse_date(value: str) -> dt.date:
+        try:
+            parsed = date_parser.parse(value)
+        except (ValueError, TypeError) as exc:
+            raise ValueError("Invalid date supplied; expected a parsable date string") from exc
+        return parsed.date()
+
+    @staticmethod
+    def _combine_datetime(start_date: dt.date, target_weekday: int, time: dt.time) -> dt.datetime:
+        if not 0 <= target_weekday <= 6:
+            raise ValueError("Weekday must be between 0 (Monday) and 6 (Sunday)")
+
+        base = Convert._next_weekday(start_date, target_weekday)
+        return dt.datetime.combine(base, time)
+
+    @staticmethod
+    def _next_weekday(start_date: dt.date, target_weekday: int) -> dt.date:
+        delta_days = (target_weekday - start_date.weekday()) % 7
+        return start_date + dt.timedelta(days=delta_days)
+
+    @staticmethod
+    def _resolve_output_path(identifier: str, explicit_path: Optional[Path]) -> Path:
+        if explicit_path is not None:
+            destination = explicit_path.expanduser()
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            return destination
+
+        safe_identifier = Convert._sanitise_identifier(identifier)
+        directory = _DEFAULT_OUTPUT_DIRECTORY
+        directory.mkdir(parents=True, exist_ok=True)
+        return directory / f"{safe_identifier}.ics"
+
+    @staticmethod
+    def _sanitise_identifier(identifier: str) -> str:
+        cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", identifier.strip())
+        return cleaned or "timetable"
