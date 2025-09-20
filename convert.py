@@ -126,26 +126,49 @@ class Convert:
 
             if isinstance(source, str):
                 stripped = source.strip()
-                if stripped.startswith("<"):
+                # Attempt to parse as XML first so large payloads are handled without
+                # being mistaken for filesystem paths.
+                try:
                     return ElementTree.fromstring(stripped)
+                except ElementTree.ParseError:
+                    pass
 
                 try:
-                    potential_path = Path(source)
+                    potential_path = Path(stripped)
                 except (OSError, TypeError):
                     potential_path = None
                 else:
-                    try:
-                        if potential_path.exists():
-                            return ElementTree.parse(potential_path).getroot()
-                    except OSError:
-                        # Treat extremely long strings or invalid paths as raw XML content.
-                        return ElementTree.fromstring(source)
+                    if potential_path and Convert._looks_like_path(stripped):
+                        try:
+                            if potential_path.exists():
+                                return ElementTree.parse(potential_path).getroot()
+                        except OSError:
+                            # Treat extremely long strings or invalid paths as raw XML content.
+                            return ElementTree.fromstring(stripped)
 
-                return ElementTree.fromstring(source)
+                # Fallback to parsing the original source as XML to surface a clear error.
+                return ElementTree.fromstring(stripped)
 
             return ElementTree.fromstring(str(source))
         except (OSError, ElementTree.ParseError, TypeError, ValueError) as exc:
             raise ValueError("Failed to parse timetable XML") from exc
+
+    @staticmethod
+    def _looks_like_path(value: str) -> bool:
+        """Heuristically determine whether the supplied string is a filesystem path."""
+
+        if not value or value.startswith("<"):
+            return False
+
+        # XML payloads typically contain angle brackets or whitespace; ignore those.
+        if any(char in value for char in "<>\n\r"):
+            return False
+
+        # Very long values are more likely to be XML content than an actual path.
+        if len(value) > 512:
+            return False
+
+        return True
 
     @staticmethod
     def _get_attribute(element: Optional[ElementTree.Element], attribute: str, default: str = "") -> str:

@@ -65,7 +65,7 @@ def _get_s3_config() -> S3Config:
 
 def upload_to_s3(file_path: Path, key: str) -> None:
     config = _get_s3_config()
-    logger.debug("Uploading %s to bucket %s with key %s", file_path, config.bucket_name, key)
+    logger.debug("Uploading calendar file to bucket %s", config.bucket_name)
     try:
         client = boto3.client(
             "s3",
@@ -111,8 +111,8 @@ def dwn_cal():
         converter = Convert(xml)
         subjects = converter.get_subjects()
         calendar_path = converter.get_calendar(subjects, start_date, end_date, client.identifier)
-    except (ValueError, EverytimeError) as exc:
-        logger.error("Failed to convert timetable: %s", exc)
+    except (ValueError, EverytimeError):
+        logger.error("Failed to convert timetable due to invalid input or API error.", exc_info=True)
         return _conversion_error_response()
 
     if calendar_path is None:
@@ -121,8 +121,8 @@ def dwn_cal():
 
     try:
         upload_to_s3(calendar_path, f"ical/{calendar_path.name}")
-    except S3UploadError as exc:
-        logger.error("S3 upload failed: %s", exc)
+    except S3UploadError:
+        logger.error("S3 upload failed.", exc_info=True)
         return _conversion_error_response()
 
     return send_file(calendar_path, as_attachment=True)
