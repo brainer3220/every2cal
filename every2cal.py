@@ -11,6 +11,10 @@ from everytime import Everytime, EverytimeError
 
 logger = logging.getLogger(__name__)
 
+SUCCESS_EXIT_CODE = 0
+ERROR_EXIT_CODE = 1
+NO_EVENTS_EXIT_CODE = 2
+
 
 def parse_arguments(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Convert an Everytime timetable to an iCalendar file.")
@@ -76,17 +80,17 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
     except (FileNotFoundError, ValueError, EverytimeError) as exc:
         logger.error("%s", exc)
-        return 1
+        return ERROR_EXIT_CODE
     except Exception:  # pragma: no cover - safeguard for unexpected errors
         logger.exception("Unexpected error while creating calendar")
-        return 1
+        return ERROR_EXIT_CODE
 
     if calendar_path is None:
         logger.warning("No events found in the timetable; no calendar file was created.")
-        return 2
+        return NO_EVENTS_EXIT_CODE
 
     print(f"Calendar saved to {calendar_path}")
-    return 0
+    return SUCCESS_EXIT_CODE
 
 
 if __name__ == "__main__":
