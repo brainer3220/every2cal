@@ -32,25 +32,21 @@ class S3Config:
 
     @classmethod
     def from_env(cls) -> "S3Config":
-        access_key_id = os.getenv("EVERY_CAL_ACCESS_KEY_ID")
-        secret_access_key = os.getenv("EVERY_CAL_SECRET_KEY_ID")
-        bucket_name = os.getenv("BUCKET_NAME")
-        expected_bucket_owner = os.getenv("EXPECTED_BUCKET_OWNER")
-
-        missing = [
-            name
-            for name, value in (
-                ("EVERY_CAL_ACCESS_KEY_ID", access_key_id),
-                ("EVERY_CAL_SECRET_KEY_ID", secret_access_key),
-                ("BUCKET_NAME", bucket_name),
-                ("EXPECTED_BUCKET_OWNER", expected_bucket_owner),
-            )
-            if not value
-        ]
-        if missing:
+        env_values = {
+            "EVERY_CAL_ACCESS_KEY_ID": os.getenv("EVERY_CAL_ACCESS_KEY_ID"),
+            "EVERY_CAL_SECRET_KEY_ID": os.getenv("EVERY_CAL_SECRET_KEY_ID"),
+            "BUCKET_NAME": os.getenv("BUCKET_NAME"),
+            "EXPECTED_BUCKET_OWNER": os.getenv("EXPECTED_BUCKET_OWNER"),
+        }
+        if missing := [name for name, value in env_values.items() if not value]:
             raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}")
 
-        return cls(access_key_id, secret_access_key, bucket_name, expected_bucket_owner)
+        return cls(
+            env_values["EVERY_CAL_ACCESS_KEY_ID"],
+            env_values["EVERY_CAL_SECRET_KEY_ID"],
+            env_values["BUCKET_NAME"],
+            env_values["EXPECTED_BUCKET_OWNER"],
+        )
 
 
 class S3UploadError(RuntimeError):
@@ -94,20 +90,20 @@ def index() -> str:
 
 @app.route("/dwn_cal", methods=["GET", "POST"])
 def dwn_cal():
-    start_date = request.values.get("start_date")
-    end_date = request.values.get("end_date")
-    schedule_reference = request.values.get("schd_url")
+    if request.method == "GET":
+        start_date = request.args.get("start_date")
+        end_date = request.args.get("end_date")
+        schedule_reference = request.args.get("schd_url")
+    else:
+        start_date = request.form.get("start_date")
+        end_date = request.form.get("end_date")
+        schedule_reference = request.form.get("schd_url")
 
     if not start_date or not end_date or not schedule_reference:
-        logger.warning(
-            "Missing parameters when requesting calendar conversion: start_date=%s, end_date=%s, url=%s",
-            start_date,
-            end_date,
-            schedule_reference,
-        )
+        logger.warning("Missing parameters when requesting calendar conversion")
         return "Missing required parameters", 400
 
-    logger.info("Processing timetable %s from %s to %s", schedule_reference, start_date, end_date)
+    logger.info("Processing timetable conversion request")
 
     try:
         client = Everytime(schedule_reference)
@@ -120,7 +116,7 @@ def dwn_cal():
         return _conversion_error_response()
 
     if calendar_path is None:
-        logger.warning("Timetable %s contained no events", schedule_reference)
+        logger.warning("Timetable request contained no events")
         return _conversion_error_response()
 
     try:

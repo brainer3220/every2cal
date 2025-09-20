@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Sequence, Union
-import xml.etree.ElementTree as ElementTree
+
+from defusedxml import ElementTree
 
 from dateutil import parser as date_parser
 from icalendar import Calendar, Event
@@ -101,7 +103,7 @@ class Convert:
                     event.add("description", subject.professor)
                 calendar.add_component(event)
 
-        has_events = any(component.name == "VEVENT" for component in calendar.subcomponents)
+        has_events = any(True for _ in calendar.walk("VEVENT"))
         if not has_events:
             logger.warning("The timetable did not contain any meeting information.")
             return None
@@ -122,19 +124,32 @@ class Convert:
             if isinstance(source, Path):
                 return ElementTree.parse(source).getroot()
 
-            potential_path = Path(str(source))
-            if potential_path.exists():
-                return ElementTree.parse(potential_path).getroot()
+            if isinstance(source, str):
+                stripped = source.strip()
+                if stripped.startswith("<"):
+                    return ElementTree.fromstring(stripped)
+
+                try:
+                    potential_path = Path(source)
+                except (OSError, TypeError):
+                    potential_path = None
+                else:
+                    try:
+                        if potential_path.exists():
+                            return ElementTree.parse(potential_path).getroot()
+                    except OSError:
+                        # Treat extremely long strings or invalid paths as raw XML content.
+                        return ElementTree.fromstring(source)
+
+                return ElementTree.fromstring(source)
 
             return ElementTree.fromstring(str(source))
-        except (OSError, ElementTree.ParseError) as exc:
+        except (OSError, ElementTree.ParseError, TypeError, ValueError) as exc:
             raise ValueError("Failed to parse timetable XML") from exc
 
     @staticmethod
     def _get_attribute(element: Optional[ElementTree.Element], attribute: str, default: str = "") -> str:
-        if element is None:
-            return default
-        return element.get(attribute, default)
+        return default if element is None else element.get(attribute, default)
 
     def _parse_meeting(self, element: ElementTree.Element) -> MeetingTime:
         try:
@@ -196,4 +211,5 @@ class Convert:
     @staticmethod
     def _sanitise_identifier(identifier: str) -> str:
         cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", identifier.strip())
-        return cleaned or "timetable"
+        hash_suffix = hashlib.sha256(identifier.encode("utf-8")).hexdigest()[:8]
+        return f"{cleaned}_{hash_suffix}" if cleaned else f"timetable_{hash_suffix}"

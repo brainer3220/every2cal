@@ -54,16 +54,11 @@ class Everytime:
     @staticmethod
     def _normalise_identifier(identifier: str) -> str:
         parsed = urlparse(identifier)
-        if parsed.scheme and parsed.netloc:
-            candidate = parsed.path
-        else:
-            candidate = identifier
+        candidate = parsed.path if parsed.scheme and parsed.netloc else identifier
 
-        candidate = candidate.replace("/@", "").lstrip("/@")
-        candidate = candidate.strip()
-        if not candidate:
+        if not (cleaned := candidate.replace("/@", "").lstrip("/@").strip()):
             raise ValueError("Could not determine an Everytime identifier from the supplied value.")
-        return candidate
+        return cleaned
 
     def get_timetable(self) -> str:
         payload = {"identifier": self.identifier, "friendInfo": "true"}
@@ -80,8 +75,7 @@ class Everytime:
         except requests.RequestException as exc:
             raise EverytimeError("Failed to download timetable from Everytime.") from exc
 
-        text = response.text.strip()
-        if not text:
+        if not (text := response.text.strip()):
             raise EverytimeError("Received an empty timetable response from Everytime.")
 
         return text

@@ -34,11 +34,13 @@ def _resolve_timetable_source(args: argparse.Namespace) -> Tuple[Union[str, Path
         identifier = args.identifier or xml_path.stem
         return xml_path, identifier
 
-    identifier = args.identifier or input("에브리타임 공개 시간표 URL 또는 식별자를 입력해주세요: ").strip()
-    if not identifier:
-        raise ValueError("A timetable identifier is required when no XML file is provided.")
+    if not args.identifier:
+        raise ValueError(
+            "A timetable identifier is required when no XML file is provided. "
+            "Pass --identifier with an Everytime URL or identifier."
+        )
 
-    client = Everytime(identifier)
+    client = Everytime(args.identifier)
     xml_data = client.get_timetable()
     return xml_data, client.identifier
 
@@ -77,7 +79,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     if calendar_path is None:
         logger.warning("No events found in the timetable; no calendar file was created.")
-        return 0
+        return 2
 
     print(f"Calendar saved to {calendar_path}")
     return 0
