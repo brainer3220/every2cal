@@ -233,6 +233,9 @@ class Convert:
 
     @staticmethod
     def _sanitise_identifier(identifier: str) -> str:
-        cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", identifier.strip())
-        hash_suffix = hashlib.sha256(identifier.encode("utf-8")).hexdigest()[:8]
-        return f"{cleaned}_{hash_suffix}" if cleaned else f"timetable_{hash_suffix}"
+        normalised = identifier.strip()
+        cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", normalised)
+        # Limit the filename prefix to keep the resulting path within sensible bounds.
+        truncated = cleaned[:64].rstrip("._-") if cleaned else "timetable"
+        hash_suffix = hashlib.sha256(normalised.encode("utf-8")).hexdigest()[:8]
+        return f"{truncated}_{hash_suffix}" if truncated else f"timetable_{hash_suffix}"
