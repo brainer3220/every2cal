@@ -23,7 +23,11 @@ def parse_arguments(argv: Optional[list[str]] = None) -> argparse.Namespace:
         type=Path,
         help="Location of the resulting .ics file. Defaults to /tmp/<identifier>.ics",
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if not args.identifier and not args.xml:
+        parser.error("Either --identifier or --xml must be supplied.")
+
+    return args
 
 
 def _resolve_timetable_source(args: argparse.Namespace) -> Tuple[Union[str, Path], str]:
