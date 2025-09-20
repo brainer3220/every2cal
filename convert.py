@@ -122,7 +122,7 @@ class Convert:
 
         try:
             if isinstance(source, Path):
-                return ElementTree.parse(source).getroot()
+                return Convert._parse_xml_file(source)
 
             if isinstance(source, str):
                 stripped = source.strip()
@@ -141,7 +141,7 @@ class Convert:
                     if potential_path and Convert._looks_like_path(stripped):
                         try:
                             if potential_path.exists():
-                                return ElementTree.parse(potential_path).getroot()
+                                return Convert._parse_xml_file(potential_path)
                         except OSError:
                             # Treat extremely long strings or invalid paths as raw XML content.
                             return ElementTree.fromstring(stripped)
@@ -152,6 +152,13 @@ class Convert:
             return ElementTree.fromstring(str(source))
         except (OSError, ElementTree.ParseError, TypeError, ValueError) as exc:
             raise ValueError("Failed to parse timetable XML") from exc
+
+    @staticmethod
+    def _parse_xml_file(path: Path) -> ElementTree.Element:
+        """Parse XML content from a filesystem path using defusedxml safeguards."""
+
+        with path.open("rb") as xml_file:
+            return ElementTree.parse(xml_file).getroot()
 
     @staticmethod
     def _looks_like_path(value: str) -> bool:
