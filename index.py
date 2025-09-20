@@ -20,6 +20,22 @@ dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def _sanitize_for_logging(value: Optional[str]) -> str:
+    """Return a safe-to-log representation of potentially user controlled data."""
+
+    if value is None:
+        return "<missing>"
+
+    # Remove control characters (including newlines) to avoid log forgery and
+    # collapse excessive length so log entries remain readable.
+    cleaned = "".join(char for char in value if char.isprintable())
+    cleaned = cleaned.strip()
+    if len(cleaned) > 128:
+        cleaned = f"{cleaned[:125]}..."
+
+    return cleaned or "<empty>"
+
 app = Flask(__name__)
 
 
@@ -99,11 +115,25 @@ def dwn_cal():
         end_date = request.form.get("end_date")
         schedule_reference = request.form.get("schd_url")
 
+    sanitized_start_date = _sanitize_for_logging(start_date)
+    sanitized_end_date = _sanitize_for_logging(end_date)
+    sanitized_reference = _sanitize_for_logging(schedule_reference)
+
     if not start_date or not end_date or not schedule_reference:
-        logger.warning("Missing parameters when requesting calendar conversion")
+        logger.warning(
+            "Missing parameters when requesting calendar conversion: start=%s end=%s identifier=%s",
+            sanitized_start_date,
+            sanitized_end_date,
+            sanitized_reference,
+        )
         return "Missing required parameters", 400
 
-    logger.info("Processing timetable conversion request")
+    logger.info(
+        "Processing timetable conversion request: start=%s end=%s identifier=%s",
+        sanitized_start_date,
+        sanitized_end_date,
+        sanitized_reference,
+    )
 
     try:
         client = Everytime(schedule_reference)
@@ -116,7 +146,12 @@ def dwn_cal():
         return _conversion_error_response()
 
     if calendar_path is None:
-        logger.warning("Timetable request contained no events")
+        logger.warning(
+            "Timetable request contained no events: start=%s end=%s identifier=%s",
+            sanitized_start_date,
+            sanitized_end_date,
+            sanitized_reference,
+        )
         return _conversion_error_response()
 
     try:
