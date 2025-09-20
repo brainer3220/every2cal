@@ -28,12 +28,14 @@ class S3Config:
     access_key_id: str
     secret_access_key: str
     bucket_name: str
+    expected_bucket_owner: str
 
     @classmethod
     def from_env(cls) -> "S3Config":
         access_key_id = os.getenv("EVERY_CAL_ACCESS_KEY_ID")
         secret_access_key = os.getenv("EVERY_CAL_SECRET_KEY_ID")
         bucket_name = os.getenv("BUCKET_NAME")
+        expected_bucket_owner = os.getenv("EXPECTED_BUCKET_OWNER")
 
         missing = [
             name
@@ -41,13 +43,14 @@ class S3Config:
                 ("EVERY_CAL_ACCESS_KEY_ID", access_key_id),
                 ("EVERY_CAL_SECRET_KEY_ID", secret_access_key),
                 ("BUCKET_NAME", bucket_name),
+                ("EXPECTED_BUCKET_OWNER", expected_bucket_owner),
             )
             if not value
         ]
         if missing:
             raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}")
 
-        return cls(access_key_id, secret_access_key, bucket_name)
+        return cls(access_key_id, secret_access_key, bucket_name, expected_bucket_owner)
 
 
 class S3UploadError(RuntimeError):
@@ -73,7 +76,12 @@ def upload_to_s3(file_path: Path, key: str) -> None:
             aws_access_key_id=config.access_key_id,
             aws_secret_access_key=config.secret_access_key,
         )
-        client.upload_file(str(file_path), config.bucket_name, key)
+        client.upload_file(
+            str(file_path),
+            config.bucket_name,
+            key,
+            ExtraArgs={"ExpectedBucketOwner": config.expected_bucket_owner},
+        )
     except (BotoCoreError, ClientError, OSError) as exc:
         raise S3UploadError("Failed to upload calendar file to S3") from exc
 
