@@ -9,5 +9,5 @@ zappa
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
 wheel>=0.38.0 # not directly required, pinned by Snyk to avoid a vulnerability
 certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
-werkzeug>=2.2.3 # not directly required, pinned by Snyk to avoid a vulnerability
+werkzeug>=3.1.4 # not directly required, pinned by Snyk to avoid a vulnerability
 python-dotenv
